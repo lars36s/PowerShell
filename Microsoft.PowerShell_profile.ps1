@@ -24,6 +24,7 @@ function Open-Solution
 }
 
 New-Alias msdev Open-Solution
+New-Alias  -name SourceTree "C:\Program Files (x86)\Atlassian\SourceTree\SourceTree.exe" -Scope "global"
 
 function Goto-TestExecution
 {
