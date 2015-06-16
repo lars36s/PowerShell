@@ -33,6 +33,10 @@ function Goto-Private
 {
   Push-Location C:\repos\private\
 }
+function Goto-Powershell
+{
+  Push-Location $PROFILE\..
+}
 
 Invoke-Environment (join-path $env:VS120COMNTOOLS "vsvars32.bat")
 
