@@ -1,4 +1,3 @@
-
 Function Invoke-Environment
 (
     [Parameter(Mandatory=$true)] [string]
@@ -11,21 +10,17 @@ Function Invoke-Environment
           [System.Environment]::SetEnvironmentVariable($matches[1], $matches[2])
       }
   }}
-
   if ($LASTEXITCODE) {
       throw "Command '$Command': exit code: $LASTEXITCODE"
   }
 }
-
 function Open-Solution
 {
   $solution = gci *.sln | Select-Object -First 1
   devenv $solution
 }
-
 New-Alias msdev Open-Solution
 New-Alias  -name SourceTree "C:\Program Files (x86)\Atlassian\SourceTree\SourceTree.exe" -Scope "global"
-
 function Goto-TestExecution
 {
   Push-Location C:\Depot\Infrastructure\source\Core\
@@ -39,13 +34,12 @@ function Goto-Powershell
   Push-Location $PROFILE\..
 }
 
+$Env:Path+=";$Env:ProgramData\chocolatey\lib\sysinternals\tools\"
+
 Invoke-Environment (join-path $env:VS120COMNTOOLS "vsvars32.bat")
-
 # Load posh-git example profile
-. 'C:\tools\poshgit\dahlbyk-posh-git-869d4c5\profile.example.ps1'
-
+if(Test-Path Function:\Prompt) {Rename-Item Function:\Prompt PrePoshGitPrompt -Force}
+. 'C:\tools\poshgit\dahlbyk-posh-git-7acc70b\profile.example.ps1'
 Rename-Item Function:\Prompt PoshGitPrompt -Force
 function Prompt() {if(Test-Path Function:\PrePoshGitPrompt){++$global:poshScope; New-Item function:\script:Write-host -value "param([object] `$object, `$backgroundColor, `$foregroundColor, [switch] `$nonewline) " -Force | Out-Null;$private:p = PrePoshGitPrompt; if(--$global:poshScope -eq 0) {Remove-Item function:\Write-Host -Force}}PoshGitPrompt}
-
 cd $env:USERPROFILE
-
