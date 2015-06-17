@@ -41,6 +41,7 @@ New-Alias msdev Open-Solution
 New-Alias  -name SourceTree "C:\Program Files (x86)\Atlassian\SourceTree\SourceTree.exe" -Scope "global"
 
 $Env:Path+=";$Env:ProgramData\chocolatey\lib\sysinternals\tools\"
+$Env:Path+=";${env:ProgramFiles(x86)}\git\bin"
 
 Write-host "Done!" -ForegroundColor Green
 
@@ -51,7 +52,8 @@ Write-host "Done!" -ForegroundColor Green
 Write-host "Starting posh-git..." -NoNewLine -ForegroundColor Yellow
 # Load posh-git example profile
 if(Test-Path Function:\Prompt) {Rename-Item Function:\Prompt PrePoshGitPrompt -Force}
-. 'C:\tools\poshgit\dahlbyk-posh-git-7acc70b\profile.example.ps1'
+#. 'C:\tools\poshgit\dahlbyk-posh-git-7acc70b\profile.example.ps1'
+ . C:\tools\poshgit\dahlbyk-posh-git-869d4c5\profile.example.ps1
 Rename-Item Function:\Prompt PoshGitPrompt -Force
 function Prompt() {if(Test-Path Function:\PrePoshGitPrompt){++$global:poshScope; New-Item function:\script:Write-host -value "param([object] `$object, `$backgroundColor, `$foregroundColor, [switch] `$nonewline) " -Force | Out-Null;$private:p = PrePoshGitPrompt; if(--$global:poshScope -eq 0) {Remove-Item function:\Write-Host -Force}}PoshGitPrompt}
 Write-host "Done!" -ForegroundColor Green
