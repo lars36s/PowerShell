@@ -6,8 +6,13 @@ It is not meant to be directly reusable by somebody else, but with that said if 
 
 Bootstrap commands:
 iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))
+
 choco install git
+
 $Env:Path+=";${env:ProgramFiles(x86)}\git\bin"
+
 rmdir $PROFILE\.. -force
+
 cd $PROFILE\..\..
+
 git clone https://github.com/lars36s/PowerShell.git WindowsPowerShell
