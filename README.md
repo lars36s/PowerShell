@@ -12,8 +12,8 @@ choco install git
 
 $Env:Path+=";${env:ProgramFiles(x86)}\git\bin"
 
-rmdir $PROFILE\.. -force
+rmdir $PROFILE\\.. -force
 
-cd $PROFILE\..\..
+cd $PROFILE\\..\\..
 
 git clone https://github.com/lars36s/PowerShell.git WindowsPowerShell
