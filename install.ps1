@@ -19,8 +19,10 @@ if (Test-Path $psdir)
   Write-host ""
   Write-host "Press enter to continue (ctrl-c to abort)"
   Read-Host
+  
+  rmdir $psdir -force
 }
 
-rmdir $psdir -force
 cd $psdir
 git clone https://github.com/lars36s/PowerShell.git WindowsPowerShell
+
