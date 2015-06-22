@@ -25,4 +25,7 @@ if (Test-Path $psdir)
 
 cd $psdir
 git clone https://github.com/lars36s/PowerShell.git WindowsPowerShell
+. .\Configure-Choco.ps1
+. .\Install-Tools.ps1
+. .\Configure-Git.ps1
 
