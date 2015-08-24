@@ -57,9 +57,15 @@ function Get-Element ($content, [int]$elementIndex)
 
 <#
 .Synopsis
-   cmdlet for parsing the output from robocopy
+   Cmdlet for parsing the output from robocopy
 .DESCRIPTION
-   Generates Progress infoormation and summary object as well as any errors are outputed as actual powershell erros
+   This cmdlet takes the output from Robocopy and uses it to generate:
+   - progress information 
+   - summary object 
+   - Any errors are outputed as actual powershell errors
+
+   This works best if robocopy is not called with the /NP (no progress argument)
+    
 .EXAMPLE
    robocopy \\nav-fs\VHDs .. Blank* /BYTES /E /IT /W:3 /R:3  | Out-RoboCopyProgress
 .EXAMPLE
@@ -182,12 +188,7 @@ function Out-RoboCopyProgress
             Write-Progress -PercentComplete $progress -Activity "Robocopy ($source ==> $destination)" -CurrentOperation "$currentFile ($currentSize)" -Status "Copying"
             return
         }
-
-        #VERBOSE:           Total      Copied   Skipped  Mismatch    FAILED    Extras
-        #VERBOSE: Dirs  :        16         0        16         0         0         4
-        #VERBOSE: Files :         7         6         0         0         1         0
-        #VERBOSE: Bytes : 205520896 201326592         0         0   4194304         0
-        #VERBOSE: Times :   0:00:09   0:00:00                       0:00:09   0:00:00
+     
         if ($progressString.StartsWith("Files :"))
         {
             $elements = $progressString.Split(" ",[System.StringSplitOptions]::RemoveEmptyEntries)   
@@ -197,8 +198,8 @@ function Out-RoboCopyProgress
             Add-Member -InputObject $Result -MemberType NoteProperty -Name FilesMismatch -Value ([Int]::Parse($elements[5]))
             Add-Member -InputObject $Result -MemberType NoteProperty -Name FilesFailed -Value ([Int]::Parse($elements[6]))
             Add-Member -InputObject $Result -MemberType NoteProperty -Name FilesExtra -Value ([Int]::Parse($elements[7]))
-
         }
+
         if ($progressString.StartsWith("Dirs :"))
         {
             $elements = $progressString.Split(" ",[System.StringSplitOptions]::RemoveEmptyEntries)   
@@ -238,9 +239,3 @@ function Out-RoboCopyProgress
         }           
     }
 }
-
-#$file = [System.io.File]::Open('C:\Users\larsro\Documents\WindowsPowerShell\BlankDisk#1.vhdx', 'Create', 'Write', 'None')
-
-robocopy \\nav-fs\VHDs .. Blank* /BYTES /E /IT /W:3 /R:3  | Out-RoboCopyProgress #-Verbose
-#$file.Close()
-
