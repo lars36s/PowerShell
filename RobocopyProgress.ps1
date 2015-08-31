@@ -52,7 +52,7 @@ function Get-Element ($content, [int]$elementIndex)
         $source = $source.Trim()
      }
 
-     return $sorce
+     return $source
 }
 
 <#
@@ -111,8 +111,6 @@ function Out-RoboCopyProgress
                 {
                     $IsCopyRunning = $true
                 }
-
-                #return
             }              
 
             if ($progressString.StartsWith("ROBOCOPY"))
@@ -122,12 +120,12 @@ function Out-RoboCopyProgress
 
             if ($progressString.StartsWith("Source"))
             {                
-                $source = Get-Element -content $progressString -elementIndex 2          
+                $source = (Get-Element -content $progressString -elementIndex 2)          
             }
 
             if ($progressString.StartsWith("Dest"))
             {                
-                $destination = Get-Element -content $progressString -elementIndex 2
+                $destination = (Get-Element -content $progressString -elementIndex 2)
             }          
 
             Write-Verbose $progressString
