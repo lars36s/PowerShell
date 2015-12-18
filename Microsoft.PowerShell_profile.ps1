@@ -1,3 +1,14 @@
+
+function Get-ParentProcessName
+{
+    $CurrentProcess = [System.Diagnostics.Process]::GetCurrentProcess()
+
+    $ParentProcessId = (gwmi win32_process -Filter "processid='$($CurrentProcess.Id)'").parentprocessid
+    $ParrentProcess = Get-Process -Id $ParentProcessId
+    $ParrentProcess.Name
+}
+
+
 Function Invoke-Environment
 (
     [Parameter(Mandatory=$true)] [string]
@@ -260,15 +271,22 @@ function Start-Enlistment {
     . .\eng\Core\Enlistment\start.ps1 -SkipSetup -IncludeOperations
 }
 
-New-Alias startenlist Start-Enlistment
+$ProcessesNotToLoadInto = @("msbuild", "mstest", "devenv", "powershell")
 
 Write-host "Starting PowerShell Profile for " -NoNewLine
 Write-host "$env:USERNAME" -ForegroundColor Green
 
-Import-Module "$PSScriptRoot\goto.psm1"
+$ParrentProcessName = Get-ParentProcessName
+
+if ($ProcessesNotToLoadInto -contains $ParrentProcessName)
+{
+    Write-Host "Parent Process is $ParrentProcessName, skipping profile load!"    
+    return;
+}
 
 Write-Status "Configuring Paths and Aliases"
-
+New-Alias startenlist Start-Enlistment
+Import-Module "$PSScriptRoot\goto.psm1"
 Configure-Aliases
 Configure-Paths
 Write-host "Done!" -ForegroundColor Green
