@@ -1,4 +1,43 @@
 
+function Get-ParentProcessChain ([System.Diagnostics.Process]$Process = [System.Diagnostics.Process]::GetCurrentProcess())
+{    
+    $ParentProcessId = (gwmi win32_process -Filter "processid='$($Process.Id)'" -ErrorAction SilentlyContinue).parentprocessid
+    
+    if ($ParentProcessId)
+    {
+        $ParentProcess = Get-Process -Id $ParentProcessId -ErrorAction SilentlyContinue
+        if ($ParentProcess)
+        {
+            Write-Output $ParentProcess
+            Get-ParentProcessChain $ParentProcess       
+        }
+    }       
+}
+
+
+
+
+function Should-SkipProfile()
+{
+    $ProcessesNotToLoadInto = @("msbuild", "mstest", "devenv")
+    $Parents = Get-ParentProcessChain
+    foreach ($Parent in $Parents)
+    {
+        if ($ProcessesNotToLoadInto -contains $Parent.ProcessName.ToLower())
+        {
+            Write-Host "Found $($Parent.ProcessName) in the Parent Process Chain, Skipping Profile Load!"    
+            return $true
+        }
+    }
+
+    return $false
+}
+
+if (Should-SkipProfile)
+{
+    return
+}
+
 function Get-ParentProcessName
 {
     $CurrentProcess = [System.Diagnostics.Process]::GetCurrentProcess()
@@ -271,18 +310,8 @@ function Start-Enlistment {
     . .\eng\Core\Enlistment\start.ps1 -SkipSetup -IncludeOperations
 }
 
-$ProcessesNotToLoadInto = @("msbuild", "mstest", "devenv", "powershell")
-
 Write-host "Starting PowerShell Profile for " -NoNewLine
 Write-host "$env:USERNAME" -ForegroundColor Green
-
-$ParrentProcessName = Get-ParentProcessName
-
-if ($ProcessesNotToLoadInto -contains $ParrentProcessName)
-{
-    Write-Host "Parent Process is $ParrentProcessName, skipping profile load!"    
-    return;
-}
 
 Write-Status "Configuring Paths and Aliases"
 New-Alias startenlist Start-Enlistment
